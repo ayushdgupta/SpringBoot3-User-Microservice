@@ -25,3 +25,9 @@
        service-url:                                    # this property will tell our microservice ki kis server ke
         defaultZone: http://localhost:8761/eureka     # paas jake register hona hai.
    ```
+6. This Microservice is registerd at below Eureka Server -
+   [Eureka Server](https://github.com/ayushdgupta/SpringBoot3-Eureka-Service-Microservice)
+7. This Microservice is first calling 'Rating Microservice' and then 'Hotel Microservice' for below API.
+```
+http://localhost:9092/user/userWithRatings/1
+```
