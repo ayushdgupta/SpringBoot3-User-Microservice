@@ -1,5 +1,7 @@
 package com.guptaji.microservice.UserMicroservice.controller;
 
+import com.guptaji.microservice.UserMicroservice.FeignInterfaces.HotelClient;
+import com.guptaji.microservice.UserMicroservice.FeignInterfaces.RatingClient;
 import com.guptaji.microservice.UserMicroservice.entities.Hotel;
 import com.guptaji.microservice.UserMicroservice.entities.Rating;
 import com.guptaji.microservice.UserMicroservice.entities.User;
@@ -27,6 +29,10 @@ public class UserController {
 
   @Autowired private RestTemplate restTemplate;
 
+  @Autowired private HotelClient hotelClient;
+
+  @Autowired private RatingClient ratingClient;
+
   @PostMapping
   public ResponseEntity<?> createUser(@RequestBody User user) {
     LOG.info("Hit createUser API");
@@ -48,6 +54,7 @@ public class UserController {
     return new ResponseEntity<>(userList, HttpStatus.OK);
   }
 
+  // In this API we are using RestTemplate to call other microservices.
   @GetMapping("/userWithRatings/{id}")
   public ResponseEntity<?> getUserWithRatingsById(@PathVariable("id") int userId) {
     LOG.info("Hit getUserWithRatingsById API");
@@ -55,16 +62,39 @@ public class UserController {
 
     // Now we will call our Rating and Hotel Microservice using RestTemplate
 
-    // Right now the URLs are constant hardcoded
-    // Below we are using array because ArrayList was giving some class cast exception
+    // Right now the URLs are constant i.e. hardcoded, our URLs are depend on the Host - localhost
+    // and Port but when our microservices will deploy on any server then both the properties will
+    // change, so we need to remove the dependency of these two things. Below we are using array
+    // because ArrayList was giving some class cast exception
     //    List<Rating> ratings =
     //            restTemplate.getForObject(
     //                "http://localhost:9091/rating/ratingByUserId/" + userId, ArrayList.class);
 
     // Using Array
+    //    Rating[] ratings =
+    //        restTemplate.getForObject(
+    //            "http://localhost:9091/rating/ratingByUserId/" + userId, Rating[].class);
+    //
+    //    List<Rating> ratingListFromArray = Arrays.stream(ratings).toList();
+    //
+    //    List<Rating> ratingList =
+    //        ratingListFromArray.stream()
+    //            .map(
+    //                rating -> {
+    //                  Hotel hotel =
+    //                      restTemplate.getForObject(
+    //                          "http://localhost:9090/hotel/" + rating.getHotelId(), Hotel.class);
+    //                  rating.setHotel(hotel);
+    //                  return rating;
+    //                })
+    //            .collect(Collectors.toList());
+
+    // Above we were using hardcoded URLs, so now we will use the application names which are
+    // registered with the eureka server, and we also need to add '@LoadBalanced' annotation with
+    // our RestTemplate bean then only our application will be able to call other microservices.
     Rating[] ratings =
         restTemplate.getForObject(
-            "http://localhost:9091/rating/ratingByUserId/" + userId, Rating[].class);
+            "http://Rating-Service/rating/ratingByUserId/" + userId, Rating[].class);
 
     List<Rating> ratingListFromArray = Arrays.stream(ratings).toList();
 
@@ -74,7 +104,30 @@ public class UserController {
                 rating -> {
                   Hotel hotel =
                       restTemplate.getForObject(
-                          "http://localhost:9090/hotel/" + rating.getHotelId(), Hotel.class);
+                          "http://Hotel-Service/hotel/" + rating.getHotelId(), Hotel.class);
+                  rating.setHotel(hotel);
+                  return rating;
+                })
+            .collect(Collectors.toList());
+
+    user.setRatings(ratingList);
+    LOG.info("Fetch the data from the Rating API");
+    return new ResponseEntity<>(user, HttpStatus.FOUND);
+  }
+
+  // In this API we will use Feign Client (like RegisterRestClient in Quarkus)
+  @GetMapping("/userWithRatingsUsingFeign/{id}")
+  public ResponseEntity<?> getUserWithRatingsByIdUsingFeign(@PathVariable("id") int userId) {
+    LOG.info("Hit getUserWithRatingsByIdUsingFeign API");
+    User user = userService.getUserById(userId);
+
+    List<Rating> ratings = ratingClient.getRatingList(userId);
+
+    List<Rating> ratingList =
+        ratings.stream()
+            .map(
+                rating -> {
+                  Hotel hotel = hotelClient.getHotel(rating.getHotelId());
                   rating.setHotel(hotel);
                   return rating;
                 })
