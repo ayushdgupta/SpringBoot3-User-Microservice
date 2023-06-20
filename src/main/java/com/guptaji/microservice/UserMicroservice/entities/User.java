@@ -1,10 +1,10 @@
 package com.guptaji.microservice.UserMicroservice.entities;
 
-import java.util.List;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
+
+import java.util.List;
 
 @Entity
 public class User {

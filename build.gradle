@@ -44,7 +44,7 @@ dependencyManagement {
 spotless {
 	java {
 		googleJavaFormat()
-		importOrder 'com', 'io', 'java', 'javax', 'org'
+		importOrder 'com', 'io', 'jakarta', 'java', 'javax', 'org'
 		removeUnusedImports()
 	}
 }
