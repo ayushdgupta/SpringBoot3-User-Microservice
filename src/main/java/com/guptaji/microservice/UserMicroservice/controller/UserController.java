@@ -14,12 +14,17 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+// '@RefreshScope' annotation is used to refresh / update all the environment properties that
+// UserController is reading from Config-files using Config-server whenever '/refresh' endpoint of
+// Spring boot actuator will be hit.
 @RestController
+@RefreshScope
 @RequestMapping("/user")
 public class UserController {
 
