@@ -48,10 +48,15 @@ http://localhost:9092/user/userWithRatings/1
     ```JAVA
       @Autowired private HotelClient hotelClient;
     ```
-11. This API is configured with below API-Gateway --  
+11. Before regitering the microservices with eureka server, if any microservice want to contact anyone then they
+    need to use their host and IP Address (e.g. localhost:8080/rating), but after registering our microservices with Eureka server
+    there is no need for them to contact with each other using above props, they can simply use their application name.
+    because application name is autoatically tied-up with those by eureka server (e.g. http://Config-Server) these things we
+    can verify in the logs of eureka server as well when we start this server.
+12. This API is configured with below API-Gateway --  
 [API Gateway](https://github.com/ayushdgupta/SpringBoot3-APIGateway-Microservice)
-12. This API is using Config-server to fetch common configuration - [Config-Server](https://github.com/ayushdgupta/SpringBoot3-ConfigServer-Microservice)
-13. Configurations are present on Github - [Common-Configuration](https://github.com/ayushdgupta/SpringBoot3-ConfigFiles-ConfigServer-Microservice)
+13. This API is using Config-server to fetch common configuration - [Config-Server](https://github.com/ayushdgupta/SpringBoot3-ConfigServer-Microservice)
+14. Configurations are present on Github - [Common-Configuration](https://github.com/ayushdgupta/SpringBoot3-ConfigFiles-ConfigServer-Microservice)
 
 ### Microservice as config-client
 1. To use our microservice as config client we need to add below dependency -
