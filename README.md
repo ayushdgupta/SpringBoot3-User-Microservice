@@ -57,6 +57,11 @@ http://localhost:9092/user/userWithRatings/1
 [API Gateway](https://github.com/ayushdgupta/SpringBoot3-APIGateway-Microservice)
 13. This API is using Config-server to fetch common configuration - [Config-Server](https://github.com/ayushdgupta/SpringBoot3-ConfigServer-Microservice)
 14. Configurations are present on Github - [Common-Configuration](https://github.com/ayushdgupta/SpringBoot3-ConfigFiles-ConfigServer-Microservice)
+15. To test load-balacing in our microservice we were using "/checkLoadBalancing" API in our code by firing below URL via API-Gateway
+```
+http://localhost:9093/user/checkLoadBalancing
+```
+
 
 ### Microservice as config-client
 1. To use our microservice as config client we need to add below dependency -

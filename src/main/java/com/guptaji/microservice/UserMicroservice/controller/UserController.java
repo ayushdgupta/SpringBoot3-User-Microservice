@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,9 @@ import org.springframework.web.client.RestTemplate;
 public class UserController {
 
   Logger LOG = LogManager.getLogger(UserController.class);
+
+  @Value("${server.port}")
+  private int portNo;
 
   @Autowired private UserServiceImpl userService;
 
@@ -141,5 +145,14 @@ public class UserController {
     user.setRatings(ratingList);
     LOG.info("Fetch the data from the Rating API");
     return new ResponseEntity<>(user, HttpStatus.FOUND);
+  }
+
+  // We are creating this api to check load-balancing implemented or not
+  @GetMapping("/checkLoadBalancing")
+  public ResponseEntity<?> checkLoadBalancing() throws InterruptedException {
+    LOG.info("Hit CheckLoadBalancing API with portNo {}", portNo);
+    List<User> userList = userService.getAllUser();
+    Thread.sleep(120000);
+    return new ResponseEntity<>(portNo, HttpStatus.OK);
   }
 }
