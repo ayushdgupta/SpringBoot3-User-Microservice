@@ -53,15 +53,14 @@ http://localhost:9092/user/userWithRatings/1
     there is no need for them to contact with each other using above props, they can simply use their application name.
     because application name is autoatically tied-up with those by eureka server (e.g. http://Config-Server) these things we
     can verify in the logs of eureka server as well when we start this server.
-12. This API is configured with below API-Gateway --  
-[API Gateway](https://github.com/ayushdgupta/SpringBoot3-APIGateway-Microservice)
+12. This API is configured with below API-Gateway - [API Gateway](https://github.com/ayushdgupta/SpringBoot3-APIGateway-Microservice)
 13. This API is using Config-server to fetch common configuration - [Config-Server](https://github.com/ayushdgupta/SpringBoot3-ConfigServer-Microservice)
 14. Configurations are present on Github - [Common-Configuration](https://github.com/ayushdgupta/SpringBoot3-ConfigFiles-ConfigServer-Microservice)
-15. To test load-balacing in our microservice we were using "/checkLoadBalancing" API in our code by firing below URL via API-Gateway
+15. To test load-balacing in our microservice we were using "/checkLoadBalancing" API in our code by firing below URL via API-Gateway and  
+    we also create the two instances of our API in intellij.
 ```
 http://localhost:9093/user/checkLoadBalancing
 ```
-
 
 ### Microservice as config-client
 1. To use our microservice as config client we need to add below dependency -
@@ -77,3 +76,19 @@ spring:
 3. By Adding above two configurations our microservice will act as config-client, so now it can fetch any values
 from config files whatever required internally (eureka server props) or externally (using @Value, System.getProperty()).
 4. @RefreshScope
+
+### Resilience4J Fault-tolerance
+1. To use Resilience4J in our project we need to add below dependencies in build.gradle -
+```groovy
+implementation 'org.springframework.boot:spring-boot-starter-actuator'
+implementation 'org.springframework.boot:spring-boot-starter-aop'
+implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+```
+2. CircuitBreaker and Retry will not work together because of their aspects order so for that follow below links --
+    1. https://resilience4j.readme.io/docs/getting-started-3#aspect-order
+    2. https://stackoverflow.com/questions/71457925/resiliency4j-circuit-breaker-with-retry-configuration-not-working
+
+3. For resilience4j circuit-breaker props follow link -- https://resilience4j.readme.io/docs/circuitbreaker
+4. Resilience4J components -
+    1. [Circuit Breaker](https://resilience4j.readme.io/docs/circuitbreaker)
+    2. [Retry](https://resilience4j.readme.io/docs/retry)

@@ -7,6 +7,9 @@ import com.guptaji.microservice.UserMicroservice.entities.Rating;
 import com.guptaji.microservice.UserMicroservice.entities.User;
 import com.guptaji.microservice.UserMicroservice.service.UserServiceImpl;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -125,8 +128,17 @@ public class UserController {
   }
 
   // In this API we will use Feign Client (like RegisterRestClient in Quarkus)
+  // Retry and CircuitBreaker does not work simultaneously so we need to do some changes in
+  // application.yaml file (changing aspect order and removing fallback of retry).
+
+  int retryCount = 1;
+
   @GetMapping("/userWithRatingsUsingFeign/{id}")
+  //  @Retry(name = "userRatingHotelRetry", fallbackMethod = "userRatingHotelFallback")
+  @Retry(name = "userRatingHotelRetry")
+  @CircuitBreaker(name = "userRatingHotelBreaker", fallbackMethod = "userRatingHotelFallback")
   public ResponseEntity<?> getUserWithRatingsByIdUsingFeign(@PathVariable("id") int userId) {
+    LOG.info("Retry count {}", retryCount++);
     LOG.info("Hit getUserWithRatingsByIdUsingFeign API");
     User user = userService.getUserById(userId);
 
@@ -145,6 +157,14 @@ public class UserController {
     user.setRatings(ratingList);
     LOG.info("Fetch the data from the Rating API");
     return new ResponseEntity<>(user, HttpStatus.FOUND);
+  }
+
+  // fallback method
+  public ResponseEntity<?> userRatingHotelFallback(int userId, Exception e) {
+    LOG.warn("Fallback method is called please take care of your microservice");
+    return new ResponseEntity<>(
+        "some error came in microservice calling " + e.getMessage(),
+        HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   // We are creating this api to check load-balancing implemented or not
