@@ -8,6 +8,7 @@ import com.guptaji.microservice.UserMicroservice.entities.User;
 import com.guptaji.microservice.UserMicroservice.service.UserServiceImpl;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 
 import java.util.Arrays;
@@ -137,6 +138,7 @@ public class UserController {
   //  @Retry(name = "userRatingHotelRetry", fallbackMethod = "userRatingHotelFallback")
   @Retry(name = "userRatingHotelRetry")
   @CircuitBreaker(name = "userRatingHotelBreaker", fallbackMethod = "userRatingHotelFallback")
+  @RateLimiter(name = "userRatingHotelRateLimiter", fallbackMethod = "userRatingHotelFallback")
   public ResponseEntity<?> getUserWithRatingsByIdUsingFeign(@PathVariable("id") int userId) {
     LOG.info("Retry count {}", retryCount++);
     LOG.info("Hit getUserWithRatingsByIdUsingFeign API");

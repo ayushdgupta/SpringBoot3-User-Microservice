@@ -17,8 +17,8 @@ spring:
     name: User-Service               # server our application will be visible with this name.
 
   config:                             # this propes is used to connect to the config-server
-#    import: optional:configserver:http://localhost:9094
-    import: optional:configserver:http://Config-Server
+    import: optional:configserver:http://localhost:9094
+#    import: optional:configserver:http://Config-Server
 
 # Below props are configured in config-files which can be fetched using config-server.
 #eureka:
@@ -65,3 +65,10 @@ resilience4j:
       userRatingHotelRetry:
         max-attempts: 3
         wait-duration: 5s
+  ratelimiter:
+    rateLimiterAspectOrder: 3
+    instances:
+      userRatingHotelRateLimiter:
+        limit-refresh-period: 30s
+        limit-for-period: 2
+        timeout-duration: 5s

@@ -84,7 +84,7 @@ implementation 'org.springframework.boot:spring-boot-starter-actuator'
 implementation 'org.springframework.boot:spring-boot-starter-aop'
 implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
 ```
-2. CircuitBreaker and Retry will not work together because of their aspects order so for that follow below links --
+2. CircuitBreaker, Retry and RateLimiter will not work together because of their aspects order so for that follow below links --
     1. https://resilience4j.readme.io/docs/getting-started-3#aspect-order
     2. https://stackoverflow.com/questions/71457925/resiliency4j-circuit-breaker-with-retry-configuration-not-working
 
@@ -92,3 +92,4 @@ implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-re
 4. Resilience4J components -
     1. [Circuit Breaker](https://resilience4j.readme.io/docs/circuitbreaker)
     2. [Retry](https://resilience4j.readme.io/docs/retry)
+    3. [Rate Limiter](https://resilience4j.readme.io/docs/ratelimiter)
